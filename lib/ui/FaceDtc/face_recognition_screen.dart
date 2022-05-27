@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:see_ai/ui/FaceDtc/detector_painters.dart';
@@ -21,18 +20,19 @@ class FaceRecognition extends StatefulWidget {
   State<FaceRecognition> createState() => _FaceRecognitionState();
 }
 
-class _FaceRecognitionState extends State<FaceRecognition>{
+class _FaceRecognitionState extends State<FaceRecognition> {
   final FlutterTts flutterTts = FlutterTts();
 
-  void speak()async{
+  void speak() async {
     await flutterTts.awaitSpeakCompletion(true);
-    await flutterTts.speak("Face recognition screen. Swipe right for currency recognition");
+    await flutterTts
+        .speak("Face recognition screen. Swipe right for currency recognition");
     //await flutterTts.speak("Swipe left for face recognition");
   }
 
   File? jsonFile;
   dynamic _scanResults;
-  CameraController? _camera ;
+  CameraController? _camera;
   // ignore: prefer_typing_uninitialized_variables
   var interpreter;
   bool _isDetecting = false;
@@ -46,24 +46,22 @@ class _FaceRecognitionState extends State<FaceRecognition>{
 
   @override
   void initState() {
-    
     super.initState();
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    // SystemChrome.setPreferredOrientations(
+    //     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     _initializeCamera();
     speak();
-    
   }
 
   Future loadModel() async {
     try {
       final gpuDelegateV2 = tfl.GpuDelegateV2(
           options: tfl.GpuDelegateOptionsV2(
-            isPrecisionLossAllowed: false,
-            inferencePreference: tfl.TfLiteGpuInferenceUsage.fastSingleAnswer,
-            inferencePriority1: tfl.TfLiteGpuInferencePriority.minLatency,
-            inferencePriority2: tfl.TfLiteGpuInferencePriority.auto,
-            inferencePriority3: tfl.TfLiteGpuInferencePriority.auto,
+        isPrecisionLossAllowed: false,
+        inferencePreference: tfl.TfLiteGpuInferenceUsage.fastSingleAnswer,
+        inferencePriority1: tfl.TfLiteGpuInferencePriority.minLatency,
+        inferencePriority2: tfl.TfLiteGpuInferencePriority.auto,
+        inferencePriority3: tfl.TfLiteGpuInferencePriority.auto,
       ));
 
       var interpreterOptions = tfl.InterpreterOptions()
@@ -77,30 +75,30 @@ class _FaceRecognitionState extends State<FaceRecognition>{
   }
 
   void _initializeCamera() async {
-    
     CameraDescription description = await getCamera(_direction);
 
     InputImageRotation rotation = rotationIntToImageRotation(
       description.sensorOrientation,
     );
 
-
-    _camera =
-        CameraController(description, ResolutionPreset.ultraHigh, enableAudio: false);
+    _camera = CameraController(description, ResolutionPreset.ultraHigh,
+        enableAudio: false);
     await _camera?.initialize();
     await loadModel();
     //await Future.delayed(const Duration(milliseconds: 500));
     tempDir = await getApplicationDocumentsDirectory();
     String _embPath = tempDir!.path + '/emb.json';
-    jsonFile =  File(_embPath);
-    if (jsonFile!.existsSync()) data = json.decode(jsonFile!.readAsStringSync());
-    
-    _camera!.startImageStream((CameraImage image)async {
+    jsonFile = File(_embPath);
+    if (jsonFile!.existsSync()) {
+      data = json.decode(jsonFile!.readAsStringSync());
+    }
+
+    _camera!.startImageStream((CameraImage image) async {
       if (_camera != null) {
         if (_isDetecting) {
           return;
         }
-        _isDetecting = true; 
+        _isDetecting = true;
         String res;
         dynamic finalResult = Multimap<String, Face>();
         List<Face> faces = await detect(image, rotation);
@@ -111,8 +109,7 @@ class _FaceRecognitionState extends State<FaceRecognition>{
           _faceFound = true;
         }
         Face _face;
-        imglib.Image convertedImage =
-            _convertCameraImage(image, _direction);
+        imglib.Image convertedImage = _convertCameraImage(image, _direction);
         for (_face in faces) {
           double x, y, w, h;
           x = (_face.boundingBox.left - 10);
@@ -131,16 +128,14 @@ class _FaceRecognitionState extends State<FaceRecognition>{
         setState(() {
           _scanResults = finalResult;
         });
-        for(var result in _scanResults.keys){
+        for (var result in _scanResults.keys) {
           await flutterTts.speak(result);
         }
-        
+
         _isDetecting = false;
       }
     });
-    setState(() {
-    });
-
+    setState(() {});
   }
 
   @override
@@ -148,17 +143,15 @@ class _FaceRecognitionState extends State<FaceRecognition>{
     super.dispose();
     _camera?.stopImageStream();
     _camera?.dispose();
-    _camera =null;
+    _camera = null;
   }
 
-
   Future<List<Face>> detect(CameraImage image, InputImageRotation rotation) {
-
     final faceDetector = GoogleMlKit.vision.faceDetector(
       const FaceDetectorOptions(
         mode: FaceDetectorMode.fast,
         //enableLandmarks: true,
-      ), 
+      ),
     );
     final WriteBuffer allBytes = WriteBuffer();
     for (final Plane plane in image.planes) {
@@ -188,16 +181,13 @@ class _FaceRecognitionState extends State<FaceRecognition>{
       planeData: planeData,
     );
 
-    return  faceDetector.processImage(
-      InputImage.fromBytes(
-        bytes: bytes,
-        inputImageData:inputImageData
-      ),
+    return faceDetector.processImage(
+      InputImage.fromBytes(bytes: bytes, inputImageData: inputImageData),
     );
   }
 
   Widget _buildResults() {
-    const Text noResultsText =  Text('');
+    const Text noResultsText = Text('');
     if (_scanResults == null ||
         _camera == null ||
         !_camera!.value.isInitialized) {
@@ -242,7 +232,8 @@ class _FaceRecognitionState extends State<FaceRecognition>{
                         _viewLabels();
                       }
                     },
-                    itemBuilder: (BuildContext context) => <PopupMenuEntry<Choice>>[
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuEntry<Choice>>[
                       const PopupMenuItem<Choice>(
                         child: Text('View Saved Faces'),
                         value: Choice.view,
@@ -270,13 +261,9 @@ class _FaceRecognitionState extends State<FaceRecognition>{
 
     setState(() {
       _camera = null;
-     
     });
-     _initializeCamera();
-
-    
+    _initializeCamera();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -341,8 +328,8 @@ class _FaceRecognitionState extends State<FaceRecognition>{
     final int? uvPixelStride = image.planes[1].bytesPerPixel;
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
-        final int uvIndex =
-            uvPixelStride! * (x / 2).floor() + uvyButtonStride * (y / 2).floor();
+        final int uvIndex = uvPixelStride! * (x / 2).floor() +
+            uvyButtonStride * (y / 2).floor();
         final int index = y * width + x;
         final yp = image.planes[0].bytes[index];
         final up = image.planes[1].bytes[uvIndex];
@@ -367,7 +354,7 @@ class _FaceRecognitionState extends State<FaceRecognition>{
   String _recog(imglib.Image img) {
     List input = imageToByteListFloat32(img, 112, 128, 128);
     input = input.reshape([1, 112, 112, 3]);
-    List output = List.filled(1 * 192,0, growable: false).reshape([1, 192]);
+    List output = List.filled(1 * 192, 0, growable: false).reshape([1, 192]);
     interpreter.run(input, output);
     output = output.reshape([192]);
     e1 = List.from(output);
@@ -412,7 +399,7 @@ class _FaceRecognitionState extends State<FaceRecognition>{
                 ListTile(
                   title: Text(
                     name,
-                    style:TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[400],
                     ),
@@ -436,7 +423,6 @@ class _FaceRecognitionState extends State<FaceRecognition>{
       // ],
     );
     showDialog(
-    
         context: context,
         builder: (context) {
           return alert;
@@ -456,9 +442,9 @@ class _FaceRecognitionState extends State<FaceRecognition>{
             child: TextField(
               controller: _name,
               autofocus: true,
-              decoration:const InputDecoration(
+              decoration: const InputDecoration(
                   labelText: "Name", icon: Icon(Icons.face)),
-            ), 
+            ),
           )
         ],
       ),
@@ -468,7 +454,7 @@ class _FaceRecognitionState extends State<FaceRecognition>{
             onPressed: () {
               _handle(_name.text.toUpperCase());
               _name.clear();
-             // Navigator.pop(context);
+              // Navigator.pop(context);
             }),
         // TextButton(
         //   child: const Text("Cancel"),
@@ -480,18 +466,15 @@ class _FaceRecognitionState extends State<FaceRecognition>{
       ],
     );
     showDialog(
-      
         context: context,
         builder: (context) {
           return alert;
         });
-
   }
 
   void _handle(String text) {
     data[text] = e1;
     jsonFile!.writeAsStringSync(json.encode(data));
-   // _initializeCamera();
+    // _initializeCamera();
   }
-
 }

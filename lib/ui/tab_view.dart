@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:see_ai/ui/cr.dart';
+import 'package:see_ai/ui/CurrencyRcg/currency_recognition.dart';
 import 'package:see_ai/ui/FaceDtc/face_recognition_screen.dart';
 import 'package:see_ai/ui/ObjDtc/object_detection_screen.dart';
 
@@ -12,7 +12,9 @@ class TabViewScreen extends StatefulWidget {
     return _TabViewScreenState();
   }
 }
-class _TabViewScreenState extends State<TabViewScreen> with TickerProviderStateMixin {
+
+class _TabViewScreenState extends State<TabViewScreen>
+    with TickerProviderStateMixin {
   // late TabController _tabController;
   // @override
   // void initState() {
@@ -27,11 +29,9 @@ class _TabViewScreenState extends State<TabViewScreen> with TickerProviderStateM
     Tab(icon: Icon(FontAwesomeIcons.faceSmile), text: 'Face Recognition'),
   ];
 
-
-
   static const List<Widget> _views = [
-    ObjectDetection(),
     CurrencyRecognitionScreen(),
+    ObjectDetection(),
     FaceRecognition(),
   ];
 
@@ -47,7 +47,8 @@ class _TabViewScreenState extends State<TabViewScreen> with TickerProviderStateM
               labelColor: const Color.fromRGBO(255, 270, 270, 0.8),
               unselectedLabelColor: Colors.white,
               //labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-              unselectedLabelStyle: const TextStyle(fontStyle: FontStyle.italic),
+              unselectedLabelStyle:
+                  const TextStyle(fontStyle: FontStyle.italic),
               padding: const EdgeInsets.only(bottom: 2),
               // overlayColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
               //   if (states.contains(MaterialState.pressed)) {
@@ -71,20 +72,19 @@ class _TabViewScreenState extends State<TabViewScreen> with TickerProviderStateM
               isScrollable: true,
               physics: const BouncingScrollPhysics(),
               enableFeedback: true,
-              
 
               // Uncomment the line below and remove DefaultTabController if you want to use a custom TabController
 
               // controller: _tabController,
 
               tabs: _tabs,
-
             ),
-            title: const Text('A-EYE',textAlign: TextAlign.center,),
+            title: const Text(
+              'A-EYE',
+              textAlign: TextAlign.center,
+            ),
             backgroundColor: const Color.fromRGBO(255, 270, 270, 0.8),
-
           ),
-
           body: const TabBarView(
             physics: BouncingScrollPhysics(),
 
@@ -93,15 +93,9 @@ class _TabViewScreenState extends State<TabViewScreen> with TickerProviderStateM
             // controller: _tabController,
 
             children: _views,
-
           ),
-
         ),
-
       ),
-
     );
-
   }
-
 }

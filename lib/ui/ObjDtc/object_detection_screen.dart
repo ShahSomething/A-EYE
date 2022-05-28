@@ -18,23 +18,25 @@ class ObjectDetection extends StatefulWidget {
 class _ObjectDetectionState extends State<ObjectDetection> {
   final FlutterTts flutterTts = FlutterTts();
 
-  void speak()async{
+  void speak() async {
     await flutterTts.setLanguage("en-US");
     //await flutterTts.setPitch(1);
     //print(await flutterTts.getVoices);
     //await flutterTts.setSpeechRate(0);
-    await flutterTts.setVoice({"name": "en-gb-x-gbb-network", "locale": "en-GB"});
+    await flutterTts
+        .setVoice({"name": "en-gb-x-gbb-network", "locale": "en-GB"});
     await flutterTts.awaitSpeakCompletion(true);
-    await flutterTts.speak("Object Detection Screen. Swipe left for currency recognition.");
+    await flutterTts.speak(
+        "Object Detection Started. Press and hold anywhere to exit Object Detection.");
     //await flutterTts.speak("Swipe left for face recognition");
   }
+
   @override
   void initState() {
-    
     super.initState();
     speak();
-    
   }
+
   /// Results to draw bounding boxes
   List<Recognition> results = [];
 
@@ -49,35 +51,38 @@ class _ObjectDetectionState extends State<ObjectDetection> {
       // appBar: AppBar(
       //   title: const Text('A-EYE'),
       // ),
-      body: Stack(
-        children: <Widget>[
-          // Camera View
-          SizedBox(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.height,
-            child: CameraView(resultsCallback),
-          ),
+      body: GestureDetector(
+        onLongPress: () => Navigator.of(context).pop(),
+        child: Stack(
+          children: <Widget>[
+            // Camera View
+            SizedBox(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.height,
+              child: CameraView(resultsCallback),
+            ),
 
-          // Bounding boxes
-          boundingBoxes(results),
+            // Bounding boxes
+            boundingBoxes(results),
 
-          // Heading
-          // Align(
-          //   alignment: Alignment.topLeft,
-          //   child: Container(
-          //     padding: const EdgeInsets.only(top: 20),
-          //     child: Text(
-          //       'Object Detection Flutter',
-          //       textAlign: TextAlign.left,
-          //       style: TextStyle(
-          //         fontSize: 28,
-          //         fontWeight: FontWeight.bold,
-          //         color: Colors.deepOrangeAccent.withOpacity(0.6),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-        ],
+            // Heading
+            // Align(
+            //   alignment: Alignment.topLeft,
+            //   child: Container(
+            //     padding: const EdgeInsets.only(top: 20),
+            //     child: Text(
+            //       'Object Detection Flutter',
+            //       textAlign: TextAlign.left,
+            //       style: TextStyle(
+            //         fontSize: 28,
+            //         fontWeight: FontWeight.bold,
+            //         color: Colors.deepOrangeAccent.withOpacity(0.6),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+          ],
+        ),
       ),
     );
   }
@@ -97,13 +102,12 @@ class _ObjectDetectionState extends State<ObjectDetection> {
   }
 
   /// Callback to get inference results from [CameraView]
-  void resultsCallback(List<Recognition> results)async {
+  void resultsCallback(List<Recognition> results) async {
     setState(() {
       this.results = results;
     });
-    for (var result in results) { 
+    for (var result in results) {
       await flutterTts.speak(result.label);
     }
-    
   }
 }

@@ -25,8 +25,8 @@ class _FaceRecognitionState extends State<FaceRecognition> {
 
   void speak() async {
     await flutterTts.awaitSpeakCompletion(true);
-    await flutterTts
-        .speak("Face recognition screen. Swipe right for currency recognition");
+    await flutterTts.speak(
+        "Face recognition started. Press and hold anywhere to exit face recognition");
     //await flutterTts.speak("Swipe left for face recognition");
   }
 
@@ -213,7 +213,7 @@ class _FaceRecognitionState extends State<FaceRecognition> {
     // }
 
     return Container(
-      constraints: const BoxConstraints.expand(),
+      //constraints: const BoxConstraints.expand(),
       child: _camera == null
           ? const Center(child: null)
           : Stack(
@@ -222,9 +222,10 @@ class _FaceRecognitionState extends State<FaceRecognition> {
                 CameraPreview(_camera!),
                 _buildResults(),
                 Positioned(
-                  top: 5,
+                  top: 40,
                   right: 5,
                   child: PopupMenuButton<Choice>(
+                    color: const Color.fromARGB(255, 247, 191, 80),
                     onSelected: (Choice result) {
                       if (result == Choice.delete) {
                         _resetFile();
@@ -292,11 +293,16 @@ class _FaceRecognitionState extends State<FaceRecognition> {
       //     ),
       //   ],
       // ),
-      body: _buildImage(),
+      body: GestureDetector(
+        onLongPress: () => Navigator.of(context).pop(),
+        child: _buildImage(),
+      ),
       floatingActionButton:
           Column(mainAxisAlignment: MainAxisAlignment.end, children: [
         FloatingActionButton(
-          backgroundColor: (_faceFound) ? Colors.blue : Colors.blueGrey,
+          backgroundColor: (_faceFound)
+              ? const Color.fromARGB(255, 247, 191, 80)
+              : Colors.blueGrey,
           child: const Icon(Icons.add),
           onPressed: () {
             if (_faceFound) _addLabel();
@@ -307,6 +313,7 @@ class _FaceRecognitionState extends State<FaceRecognition> {
           height: 10,
         ),
         FloatingActionButton(
+          backgroundColor: const Color.fromARGB(255, 247, 191, 80),
           onPressed: _toggleCameraDirection,
           heroTag: null,
           child: _direction == CameraLensDirection.back

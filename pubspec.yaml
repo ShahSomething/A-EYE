@@ -51,7 +51,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   camera: ^0.9.4+5
-  tflite:
   tflite_flutter: ^0.9.0
 
   # The "flutter_lints" package below contains a set of recommended lints to

@@ -5,6 +5,8 @@ import 'package:lottie/lottie.dart';
 import 'package:see_ai/ui/CurrencyRcg/currency_recognition.dart';
 import 'package:see_ai/ui/FaceDtc/face_recognition_screen.dart';
 import 'package:see_ai/ui/ObjDtc/object_detection_screen.dart';
+import 'package:shake/shake.dart';
+import 'package:telephony/telephony.dart';
 
 class TabViewScreen extends StatefulWidget {
   const TabViewScreen({Key? key}) : super(key: key);
@@ -38,6 +40,40 @@ class _TabViewScreenState extends State<TabViewScreen>
     FaceRcg(),
     //FaceRecognition(),
   ];
+
+  // ShakeDetector? detector;
+
+  @override
+  void initState() {
+    ShakeDetector detector = ShakeDetector.waitForStart(onPhoneShake: () async {
+      final Telephony telephony = Telephony.instance;
+      bool? permissionsGranted = await telephony.requestSmsPermissions;
+      telephony.sendSms(
+          to: "+923494292932",
+          message: "Need your help!",
+          statusListener: (status) {
+            switch (status) {
+              case SendStatus.SENT:
+                print('sent');
+                break;
+              case SendStatus.DELIVERED:
+                print('delivered');
+                break;
+              default:
+                print('FAILED');
+            }
+          });
+    });
+
+    detector.startListening();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    //detector!.stopListening();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -45,6 +45,8 @@ dependencies:
   font_awesome_flutter: ^10.0.0
   flutter_tts: ^3.3.3
   google_ml_kit: ^0.7.3
+  shake: ^2.1.0
+  telephony: ^0.1.4
   #firebase_ml_vision: ^0.6.0
 
 dev_dependencies:

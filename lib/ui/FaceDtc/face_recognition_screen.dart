@@ -5,13 +5,13 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:see_ai/ui/FaceDtc/detector_painters.dart';
 import 'package:see_ai/ui/FaceDtc/fr_utils.dart';
 import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 import 'package:image/image.dart' as imglib;
 import 'package:quiver/collection.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
 
 class FaceRecognition extends StatefulWidget {
   const FaceRecognition({Key? key}) : super(key: key);
@@ -147,9 +147,11 @@ class _FaceRecognitionState extends State<FaceRecognition> {
   }
 
   Future<List<Face>> detect(CameraImage image, InputImageRotation rotation) {
-    final faceDetector = GoogleMlKit.vision.faceDetector(
-      const FaceDetectorOptions(
-        mode: FaceDetectorMode.fast,
+    final faceDetector = FaceDetector(
+      options: FaceDetectorOptions(
+        performanceMode: FaceDetectorMode.fast,
+
+        //mode: FaceDetectorMode.fast,
         //enableLandmarks: true,
       ),
     );
@@ -162,8 +164,8 @@ class _FaceRecognitionState extends State<FaceRecognition> {
     final Size imageSize =
         Size(image.width.toDouble(), image.height.toDouble());
     final inputImageFormat =
-        InputImageFormatMethods.fromRawValue(image.format.raw) ??
-            InputImageFormat.NV21;
+        InputImageFormatValue.fromRawValue(image.format.raw) ??
+            InputImageFormat.nv21;
     final planeData = image.planes.map(
       (Plane plane) {
         return InputImagePlaneMetadata(

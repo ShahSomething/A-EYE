@@ -19,6 +19,8 @@ class TabViewScreen extends StatefulWidget {
 
 class _TabViewScreenState extends State<TabViewScreen>
     with TickerProviderStateMixin {
+  var flutterTts = FlutterTts();
+  TextEditingController phoneNumber = TextEditingController(text: '');
   // late TabController _tabController;
   // @override
   // void initState() {
@@ -45,25 +47,37 @@ class _TabViewScreenState extends State<TabViewScreen>
 
   @override
   void initState() {
-    ShakeDetector detector = ShakeDetector.waitForStart(onPhoneShake: () async {
-      final Telephony telephony = Telephony.instance;
-      bool? permissionsGranted = await telephony.requestSmsPermissions;
-      telephony.sendSms(
-          to: "+923494292932",
-          message: "Need your help!",
-          statusListener: (status) {
-            switch (status) {
-              case SendStatus.SENT:
-                print('sent');
-                break;
-              case SendStatus.DELIVERED:
-                print('delivered');
-                break;
-              default:
-                print('FAILED');
-            }
-          });
-    });
+    ShakeDetector detector = ShakeDetector.waitForStart(
+        onPhoneShake: () async {
+          if (phoneNumber.text.isEmpty) {
+            await flutterTts.speak('Please provide an emergency contact');
+            return;
+          }
+          final Telephony telephony = Telephony.instance;
+          bool? permissionsGranted = await telephony.requestSmsPermissions;
+          if (permissionsGranted == true) {
+            telephony.sendSms(
+                to: phoneNumber.text,
+                message: "Need your help!",
+                statusListener: (status) async {
+                  switch (status) {
+                    case SendStatus.SENT:
+                      await flutterTts.speak('Message sent successfully');
+                      break;
+                    case SendStatus.DELIVERED:
+                      await flutterTts.speak('Message delivered successfully');
+                      break;
+                    default:
+                      await flutterTts.speak('Failed to send message');
+                  }
+                });
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Permission not granted')));
+            await flutterTts.speak('Permission not granted');
+          }
+        },
+        minimumShakeCount: 2);
 
     detector.startListening();
     super.initState();
@@ -71,6 +85,7 @@ class _TabViewScreenState extends State<TabViewScreen>
 
   @override
   void dispose() {
+    phoneNumber.dispose();
     //detector!.stopListening();
     super.dispose();
   }
@@ -83,6 +98,55 @@ class _TabViewScreenState extends State<TabViewScreen>
         child: Scaffold(
           appBar: AppBar(
             centerTitle: true,
+            actions: [
+              IconButton(
+                onPressed: () {
+                  var alert = AlertDialog(
+                    title: const Text("Edit Emergency contact"),
+                    content: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: TextField(
+                            controller: phoneNumber,
+                            autofocus: true,
+                            decoration: InputDecoration(
+                                labelText: "Phone Number",
+                                icon: const Icon(Icons.phone),
+                                hintText: phoneNumber.text.isEmpty
+                                    ? null
+                                    : phoneNumber.text),
+                          ),
+                        )
+                      ],
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                          child: const Text("Save"),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          }),
+                      // TextButton(
+                      //   child: const Text("Cancel"),
+                      //   onPressed: () {
+                      //     // _initializeCamera();
+                      //     // Navigator.of(context).pop();
+                      //   },
+                      // )
+                    ],
+                  );
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return alert;
+                    },
+                  );
+                },
+                icon: const Icon(
+                  Icons.settings,
+                  color: Colors.white,
+                ),
+              )
+            ],
             bottom: TabBar(
               labelColor: Colors.black,
               //labelColor: const Color.fromRGBO(255, 270, 270, 0.8),
@@ -162,7 +226,7 @@ class _ObjState extends State<Obj> {
     //await flutterTts.setSpeechRate(0);
     await flutterTts
         .setVoice({"name": "en-gb-x-gbb-network", "locale": "en-GB"});
-    await flutterTts.awaitSpeakCompletion(true);
+    await flutterTts.awaitSpeakCompletion(false);
     await flutterTts.speak(
         "Object Detection Screen. Tap anywhere to start detection or swipe left for currency recognition.");
     //await flutterTts.speak("Swipe left for face recognition");
@@ -183,20 +247,22 @@ class _ObjState extends State<Obj> {
           Navigator.of(context)
               .push(MaterialPageRoute(builder: (_) => const ObjectDetection()));
         },
-        child: Column(
-          //mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Padding(
-              padding:
-                  EdgeInsets.only(top: 80, left: 15, right: 15, bottom: 15),
-              child: Text(
-                'Tap anywhere on the screen to start detection',
-                style: TextStyle(fontSize: 18),
-                textAlign: TextAlign.center,
+        child: SingleChildScrollView(
+          child: Column(
+            //mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Padding(
+                padding:
+                    EdgeInsets.only(top: 80, left: 15, right: 15, bottom: 15),
+                child: Text(
+                  'Tap anywhere on the screen to start detection',
+                  style: TextStyle(fontSize: 18),
+                  textAlign: TextAlign.center,
+                ),
               ),
-            ),
-            Lottie.asset('./assets/objectDtc.json'),
-          ],
+              Lottie.asset('./assets/objectDtc.json'),
+            ],
+          ),
         ),
       ),
     );
@@ -220,7 +286,7 @@ class _FaceRcgState extends State<FaceRcg> {
     //await flutterTts.setSpeechRate(0);
     await flutterTts
         .setVoice({"name": "en-gb-x-gbb-network", "locale": "en-GB"});
-    await flutterTts.awaitSpeakCompletion(true);
+    await flutterTts.awaitSpeakCompletion(false);
     await flutterTts.speak(
         "Face recognition Screen. Tap anywhere to start recognizing or swipe right for currency recognition.");
     //await flutterTts.speak("Swipe left for face recognition");
@@ -239,20 +305,22 @@ class _FaceRcgState extends State<FaceRcg> {
       body: GestureDetector(
         onTap: () => Navigator.of(context)
             .push(MaterialPageRoute(builder: (_) => const FaceRecognition())),
-        child: Column(
-          children: [
-            const Padding(
-              padding:
-                  EdgeInsets.only(top: 80, left: 15, right: 15, bottom: 30),
-              child: Text(
-                'Tap anywhere on the screen to start recognizing',
-                style: TextStyle(fontSize: 18),
-                textAlign: TextAlign.center,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const Padding(
+                padding:
+                    EdgeInsets.only(top: 80, left: 15, right: 15, bottom: 30),
+                child: Text(
+                  'Tap anywhere on the screen to start recognizing',
+                  style: TextStyle(fontSize: 18),
+                  textAlign: TextAlign.center,
+                ),
               ),
-            ),
-            Lottie.asset('./assets/faceRcg.json',
-                width: MediaQuery.of(context).size.width - 80)
-          ],
+              Lottie.asset('./assets/faceRcg.json',
+                  width: MediaQuery.of(context).size.width - 80)
+            ],
+          ),
         ),
       ),
     );

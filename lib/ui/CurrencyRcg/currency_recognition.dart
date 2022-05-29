@@ -21,9 +21,11 @@ class _CurrencyRecognitionScreenState extends State<CurrencyRecognitionScreen> {
   final FlutterTts flutterTts = FlutterTts();
 
   void speak() async {
-    await flutterTts.awaitSpeakCompletion(true);
+    await flutterTts
+        .setVoice({"name": "en-gb-x-gbb-network", "locale": "en-GB"});
+    await flutterTts.awaitSpeakCompletion(false);
     await flutterTts.speak(
-        "Currency recognition screen. Tap anywhere on the screen to open camera");
+        "Currency recognition screen. Tap anywhere on the screen to open camera or swipe left for Face recognition");
     //await flutterTts.speak("Swipe left for face recognition");
   }
 

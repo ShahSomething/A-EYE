@@ -459,12 +459,13 @@ class _FaceRecognitionState extends State<FaceRecognition> {
       ),
       actions: <Widget>[
         TextButton(
-            child: const Text("Save"),
-            onPressed: () {
-              _handle(_name.text.toUpperCase());
-              _name.clear();
-              // Navigator.pop(context);
-            }),
+          child: const Text("Save"),
+          onPressed: () {
+            _handle(_name.text.toUpperCase());
+            _name.clear();
+            //Navigator.pop(context);
+          },
+        ),
         // TextButton(
         //   child: const Text("Cancel"),
         //   onPressed: () {

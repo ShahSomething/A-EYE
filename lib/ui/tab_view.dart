@@ -1,7 +1,11 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:see_ai/ui/CurrencyRcg/currency_recognition.dart';
 import 'package:see_ai/ui/FaceDtc/face_recognition_screen.dart';
 import 'package:see_ai/ui/ObjDtc/object_detection_screen.dart';
@@ -20,7 +24,11 @@ class TabViewScreen extends StatefulWidget {
 class _TabViewScreenState extends State<TabViewScreen>
     with TickerProviderStateMixin {
   var flutterTts = FlutterTts();
-  TextEditingController phoneNumber = TextEditingController(text: '');
+  TextEditingController? phoneNumber;
+  Directory? tempDir;
+  File? jsonFile;
+  var data = {};
+
   // late TabController _tabController;
   // @override
   // void initState() {
@@ -47,9 +55,23 @@ class _TabViewScreenState extends State<TabViewScreen>
 
   @override
   void initState() {
+    asyncInit();
+
+    super.initState();
+  }
+
+  void asyncInit() async {
+    tempDir = await getApplicationDocumentsDirectory();
+    String _numberPath = tempDir!.path + '/number.json';
+    jsonFile = File(_numberPath);
+    if (jsonFile!.existsSync()) {
+      data = json.decode(jsonFile!.readAsStringSync());
+    }
+    phoneNumber =
+        TextEditingController(text: data.isEmpty ? '' : data['number']);
     ShakeDetector detector = ShakeDetector.waitForStart(
         onPhoneShake: () async {
-          if (phoneNumber.text.isEmpty) {
+          if (phoneNumber!.text.isEmpty) {
             await flutterTts.speak('Please provide an emergency contact');
             return;
           }
@@ -57,7 +79,7 @@ class _TabViewScreenState extends State<TabViewScreen>
           bool? permissionsGranted = await telephony.requestSmsPermissions;
           if (permissionsGranted == true) {
             telephony.sendSms(
-                to: phoneNumber.text,
+                to: phoneNumber!.text,
                 message: "Need your help!",
                 statusListener: (status) async {
                   switch (status) {
@@ -80,12 +102,11 @@ class _TabViewScreenState extends State<TabViewScreen>
         minimumShakeCount: 2);
 
     detector.startListening();
-    super.initState();
   }
 
   @override
   void dispose() {
-    phoneNumber.dispose();
+    phoneNumber!.dispose();
     //detector!.stopListening();
     super.dispose();
   }
@@ -112,9 +133,9 @@ class _TabViewScreenState extends State<TabViewScreen>
                             decoration: InputDecoration(
                                 labelText: "Phone Number",
                                 icon: const Icon(Icons.phone),
-                                hintText: phoneNumber.text.isEmpty
+                                hintText: phoneNumber!.text.isEmpty
                                     ? null
-                                    : phoneNumber.text),
+                                    : phoneNumber!.text),
                           ),
                         )
                       ],
@@ -123,6 +144,8 @@ class _TabViewScreenState extends State<TabViewScreen>
                       TextButton(
                           child: const Text("Save"),
                           onPressed: () {
+                            data['number'] = phoneNumber!.text;
+                            jsonFile!.writeAsStringSync(json.encode(data));
                             Navigator.pop(context);
                           }),
                       // TextButton(

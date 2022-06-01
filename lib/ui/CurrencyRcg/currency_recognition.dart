@@ -284,6 +284,9 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
                   // Ensure that the camera is initialized.
                   await _initializeControllerFuture;
 
+                  await _controller!.setFlashMode(FlashMode.torch);
+                  await _controller!.setFocusMode(FocusMode.auto);
+
                   // Attempt to take a picture and log where it's been saved.
                   final pickedFile = await _controller!.takePicture();
 

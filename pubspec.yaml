@@ -48,13 +48,14 @@ dependencies:
   google_mlkit_face_detection: ^0.3.0
   shake: ^2.1.0
   telephony: ^0.1.4
+  camera: ^0.9.4+5
+  tflite_flutter: ^0.9.0
   #firebase_ml_vision: ^0.6.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  camera: ^0.9.4+5
-  tflite_flutter: ^0.9.0
+  
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

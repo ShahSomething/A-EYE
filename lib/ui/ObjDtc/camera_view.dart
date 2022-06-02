@@ -67,11 +67,13 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
     cameras = await availableCameras();
 
     // cameras[0] for rear-camera
-    cameraController =
-        CameraController(cameras[0], ResolutionPreset.ultraHigh, enableAudio: false);
+    cameraController = CameraController(cameras[0], ResolutionPreset.ultraHigh,
+        enableAudio: false);
 
     cameraController!.initialize().then((_) async {
       // Stream of image passed to [onLatestImageAvailable] callback
+      await cameraController!.setFlashMode(FlashMode.auto);
+      await cameraController!.setFocusMode(FocusMode.auto);
       await cameraController!.startImageStream(onLatestImageAvailable);
 
       /// previewSize is size of each image frame captured by controller

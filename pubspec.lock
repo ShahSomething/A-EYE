@@ -23,7 +23,7 @@ packages:
     source: hosted
     version: "2.1.0"
   camera:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: camera
       url: "https://pub.dartlang.org"
@@ -393,7 +393,7 @@ packages:
     source: hosted
     version: "0.4.9"
   tflite_flutter:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: tflite_flutter
       url: "https://pub.dartlang.org"

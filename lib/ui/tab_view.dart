@@ -6,9 +6,9 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:see_ai/ui/CurrencyRcg/currency_recognition.dart';
-import 'package:see_ai/ui/FaceDtc/face_recognition_screen.dart';
-import 'package:see_ai/ui/ObjDtc/object_detection_screen.dart';
+import 'package:a_eye/ui/CurrencyRcg/currency_recognition.dart';
+import 'package:a_eye/ui/FaceDtc/face_recognition_screen.dart';
+import 'package:a_eye/ui/ObjDtc/object_detection_screen.dart';
 import 'package:shake/shake.dart';
 import 'package:telephony/telephony.dart';
 

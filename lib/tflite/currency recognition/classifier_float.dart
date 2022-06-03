@@ -1,4 +1,4 @@
-import 'package:see_ai/tflite/currency%20recognition/classifier.dart';
+import 'package:a_eye/tflite/currency%20recognition/classifier.dart';
 import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
 
 class ClassifierFloat extends Classifier {

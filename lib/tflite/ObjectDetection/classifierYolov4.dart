@@ -5,7 +5,7 @@ import 'dart:ui';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as imageLib;
-import 'package:see_ai/tflite/ObjectDetection/recognition.dart';
+import 'package:a_eye/tflite/ObjectDetection/recognition.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
 
@@ -40,13 +40,13 @@ class Classifier {
   ImageProcessor? imageProcessor;
 
   /// Padding the image to transform into square
-  int padSize =0;
+  int padSize = 0;
 
   /// Shapes of output tensors
-  List<List<int>> _outputShapes =[];
+  List<List<int>> _outputShapes = [];
 
   /// Types of output tensors
-  List<TfLiteType> _outputTypes=[];
+  List<TfLiteType> _outputTypes = [];
 
   /// Number of results to show
   static const int NUM_RESULTS = 10;
@@ -226,8 +226,8 @@ class Classifier {
 
     List<List<List<double>>> outputClassScores = List.generate(
         _outputShapes[1][0],
-        (_) => List.generate(_outputShapes[1][1],
-            (_) => List.filled(_outputShapes[1][2], 0.0),
+        (_) => List.generate(
+            _outputShapes[1][1], (_) => List.filled(_outputShapes[1][2], 0.0),
             growable: false),
         growable: false);
 
@@ -307,8 +307,8 @@ class Classifier {
             min(INPUT_SIZE + 0.0, locations[i].bottom));
 
         // Gets the coordinates based on the original image if anything was done to it.
-        Rect transformedRect = imageProcessor!.inverseTransformRect(
-            rectAti, image.height, image.width);
+        Rect transformedRect = imageProcessor!
+            .inverseTransformRect(rectAti, image.height, image.width);
 
         recognitions.add(
           Recognition(i, label, score, transformedRect),

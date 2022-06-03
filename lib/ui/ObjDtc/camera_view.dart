@@ -4,10 +4,10 @@ import 'dart:isolate';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:see_ai/tflite/ObjectDetection/recognition.dart';
-import 'package:see_ai/ui/ObjDtc/camera_view_singleton.dart';
-import 'package:see_ai/utils/isolate_utils.dart';
-import 'package:see_ai/tflite/ObjectDetection/classifier.dart';
+import 'package:a_eye/tflite/ObjectDetection/recognition.dart';
+import 'package:a_eye/ui/ObjDtc/camera_view_singleton.dart';
+import 'package:a_eye/utils/isolate_utils.dart';
+import 'package:a_eye/tflite/ObjectDetection/classifier.dart';
 
 /// [CameraView] sends each frame for inference
 class CameraView extends StatefulWidget {

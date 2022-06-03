@@ -5,8 +5,8 @@ import 'dart:isolate';
 
 import 'package:camera/camera.dart';
 import 'package:image/image.dart' as imageLib;
-import 'package:see_ai/tflite/ObjectDetection/classifier.dart';
-import 'package:see_ai/utils/image_utils.dart';
+import 'package:a_eye/tflite/ObjectDetection/classifier.dart';
+import 'package:a_eye/utils/image_utils.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 /// Manages separate Isolate instance for inference

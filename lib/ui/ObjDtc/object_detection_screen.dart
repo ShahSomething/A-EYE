@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:see_ai/tflite/ObjectDetection/recognition.dart';
-import 'package:see_ai/ui/ObjDtc/box_widget.dart';
+import 'package:a_eye/tflite/ObjectDetection/recognition.dart';
+import 'package:a_eye/ui/ObjDtc/box_widget.dart';
 
 import 'camera_view.dart';
 

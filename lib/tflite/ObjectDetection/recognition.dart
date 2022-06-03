@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
-import 'package:see_ai/ui/ObjDtc/camera_view_singleton.dart';
+import 'package:a_eye/ui/ObjDtc/camera_view_singleton.dart';
 
 /// Represents the recognition output from the model
 class Recognition {
@@ -46,8 +46,8 @@ class Recognition {
     double transTop = max(0.1, location!.top * ratioY);
     double transWidth = min(
         location!.width * ratioX, CameraViewSingleton.actualPreviewSize.width);
-    double transHeight = min(
-        location!.height * ratioY, CameraViewSingleton.actualPreviewSize.height);
+    double transHeight = min(location!.height * ratioY,
+        CameraViewSingleton.actualPreviewSize.height);
 
     Rect transformedRect =
         Rect.fromLTWH(transLeft, transTop, transWidth, transHeight);

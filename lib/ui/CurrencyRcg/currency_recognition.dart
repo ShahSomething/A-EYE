@@ -90,7 +90,7 @@ class _CurrencyRecognitionScreenState extends State<CurrencyRecognitionScreen> {
               builder: (_) => TakePictureScreen(camera: firstCamera!),
             ),
           )
-              .then((value) {
+              .then((_) {
             _predict();
             setState(() {});
           });

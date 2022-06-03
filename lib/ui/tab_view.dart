@@ -24,7 +24,8 @@ class TabViewScreen extends StatefulWidget {
 class _TabViewScreenState extends State<TabViewScreen>
     with TickerProviderStateMixin {
   var flutterTts = FlutterTts();
-  TextEditingController? phoneNumber;
+  TextEditingController? phoneNumber1;
+  TextEditingController? phoneNumber2;
   Directory? tempDir;
   File? jsonFile;
   var data = {};
@@ -67,46 +68,49 @@ class _TabViewScreenState extends State<TabViewScreen>
     if (jsonFile!.existsSync()) {
       data = json.decode(jsonFile!.readAsStringSync());
     }
-    phoneNumber =
-        TextEditingController(text: data.isEmpty ? '' : data['number']);
+    phoneNumber1 =
+        TextEditingController(text: data.isEmpty ? '' : data['number1']);
+    phoneNumber2 =
+        TextEditingController(text: data.isEmpty ? '' : data['number2']);
     ShakeDetector detector = ShakeDetector.waitForStart(
-        onPhoneShake: () async {
-          if (phoneNumber!.text.isEmpty) {
-            await flutterTts.speak('Please provide an emergency contact');
-            return;
-          }
-          final Telephony telephony = Telephony.instance;
-          bool? permissionsGranted = await telephony.requestSmsPermissions;
-          if (permissionsGranted == true) {
-            telephony.sendSms(
-                to: phoneNumber!.text,
-                message: "Need your help!",
-                statusListener: (status) async {
-                  switch (status) {
-                    case SendStatus.SENT:
-                      await flutterTts.speak('Message sent successfully');
-                      break;
-                    case SendStatus.DELIVERED:
-                      await flutterTts.speak('Message delivered successfully');
-                      break;
-                    default:
-                      await flutterTts.speak('Failed to send message');
-                  }
-                });
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Permission not granted')));
-            await flutterTts.speak('Permission not granted');
-          }
-        },
-        minimumShakeCount: 2);
+      onPhoneShake: () async {
+        if (phoneNumber1!.text.isEmpty || phoneNumber2!.text.isEmpty) {
+          await flutterTts.speak('Please provide an emergency contact');
+          return;
+        }
+        final Telephony telephony = Telephony.instance;
+        bool? permissionsGranted = await telephony.requestSmsPermissions;
+        if (permissionsGranted == true) {
+          telephony.sendSms(
+            to: phoneNumber1!.text + ';' + phoneNumber2!.text,
+            message: "Need your help!",
+            statusListener: (status) async {
+              switch (status) {
+                case SendStatus.SENT:
+                  await flutterTts.speak('Message sent successfully');
+                  break;
+                case SendStatus.DELIVERED:
+                  await flutterTts.speak('Message delivered successfully');
+                  break;
+                default:
+                  await flutterTts.speak('Failed to send message');
+              }
+            },
+          );
+        } else {
+          await flutterTts.speak('Permission not granted');
+        }
+      },
+      minimumShakeCount: 2,
+    );
 
     detector.startListening();
   }
 
   @override
   void dispose() {
-    phoneNumber!.dispose();
+    phoneNumber1!.dispose();
+    phoneNumber2!.dispose();
     //detector!.stopListening();
     super.dispose();
   }
@@ -123,19 +127,36 @@ class _TabViewScreenState extends State<TabViewScreen>
               IconButton(
                 onPressed: () {
                   var alert = AlertDialog(
-                    title: const Text("Edit Emergency contact"),
-                    content: Row(
+                    title: const Text("Edit Emergency contacts"),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        Expanded(
+                        SizedBox(
+                          width: double.infinity,
                           child: TextField(
-                            controller: phoneNumber,
+                            controller: phoneNumber1,
                             autofocus: true,
                             decoration: InputDecoration(
-                                labelText: "Phone Number",
-                                icon: const Icon(Icons.phone),
-                                hintText: phoneNumber!.text.isEmpty
-                                    ? null
-                                    : phoneNumber!.text),
+                              labelText: "Phone Number 1",
+                              icon: const Icon(Icons.phone),
+                              hintText: phoneNumber1!.text.isEmpty
+                                  ? null
+                                  : phoneNumber1!.text,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: TextField(
+                            controller: phoneNumber2,
+                            autofocus: true,
+                            decoration: InputDecoration(
+                              labelText: "Phone Number 2",
+                              icon: const Icon(Icons.phone),
+                              hintText: phoneNumber2!.text.isEmpty
+                                  ? null
+                                  : phoneNumber2!.text,
+                            ),
                           ),
                         )
                       ],
@@ -143,8 +164,15 @@ class _TabViewScreenState extends State<TabViewScreen>
                     actions: <Widget>[
                       TextButton(
                           child: const Text("Save"),
-                          onPressed: () {
-                            data['number'] = phoneNumber!.text;
+                          onPressed: () async {
+                            if (phoneNumber1!.text.isEmpty ||
+                                phoneNumber2!.text.isEmpty) {
+                              await flutterTts.speak(
+                                  'Please provide two emergency contacts');
+                              return;
+                            }
+                            data['number1'] = phoneNumber1!.text;
+                            data['number2'] = phoneNumber2!.text;
                             jsonFile!.writeAsStringSync(json.encode(data));
                             Navigator.pop(context);
                           }),
@@ -178,20 +206,7 @@ class _TabViewScreenState extends State<TabViewScreen>
               unselectedLabelStyle:
                   const TextStyle(fontStyle: FontStyle.italic),
               padding: const EdgeInsets.only(bottom: 2),
-              // overlayColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
-              //   if (states.contains(MaterialState.pressed)) {
-              //     return Colors.white;
-              //   } if (states.contains(MaterialState.focused)) {
-              //     return Colors.orange;
-              //   } else if (states.contains(MaterialState.hovered)) {
-              //     return Colors.pinkAccent;
-              //   }
-              //   return Colors.transparent;
-              // }),
-              //indicatorWeight: 10,
-              // indicatorColor: Colors.red,
-              // indicatorSize: TabBarIndicatorSize.tab,
-              // indicatorPadding: const EdgeInsets.all(5),
+
               indicator: BoxDecoration(
                 border: Border.all(
                   color: const Color.fromARGB(255, 247, 191, 80),
@@ -202,10 +217,6 @@ class _TabViewScreenState extends State<TabViewScreen>
               isScrollable: true,
               physics: const BouncingScrollPhysics(),
               enableFeedback: true,
-
-              // Uncomment the line below and remove DefaultTabController if you want to use a custom TabController
-
-              // controller: _tabController,
 
               tabs: _tabs,
             ),
@@ -219,11 +230,6 @@ class _TabViewScreenState extends State<TabViewScreen>
           ),
           body: const TabBarView(
             physics: BouncingScrollPhysics(),
-
-            // Uncomment the line below and remove DefaultTabController if you want to use a custom TabController
-
-            // controller: _tabController,
-
             children: _views,
           ),
         ),
@@ -244,15 +250,12 @@ class _ObjState extends State<Obj> {
 
   void speak() async {
     await flutterTts.setLanguage("en-US");
-    //await flutterTts.setPitch(1);
-    //print(await flutterTts.getVoices);
-    //await flutterTts.setSpeechRate(0);
+
     await flutterTts
         .setVoice({"name": "en-gb-x-gbb-network", "locale": "en-GB"});
     await flutterTts.awaitSpeakCompletion(false);
     await flutterTts.speak(
         "Object Detection Screen. Tap anywhere to start detection or swipe left for currency recognition.");
-    //await flutterTts.speak("Swipe left for face recognition");
   }
 
   @override
@@ -268,7 +271,19 @@ class _ObjState extends State<Obj> {
       body: GestureDetector(
         onTap: () {
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (_) => const ObjectDetection()));
+              .push(
+            MaterialPageRoute(
+              builder: (_) => const ObjectDetection(),
+            ),
+          )
+              .then(
+            (_) async {
+              await flutterTts.awaitSpeakCompletion(false);
+              await flutterTts.speak(
+                "Object Detection Screen. Tap anywhere to start detection or swipe left for currency recognition.",
+              );
+            },
+          );
         },
         child: SingleChildScrollView(
           child: Column(
@@ -304,15 +319,12 @@ class _FaceRcgState extends State<FaceRcg> {
 
   void speak() async {
     await flutterTts.setLanguage("en-US");
-    //await flutterTts.setPitch(1);
-    //print(await flutterTts.getVoices);
-    //await flutterTts.setSpeechRate(0);
+
     await flutterTts
         .setVoice({"name": "en-gb-x-gbb-network", "locale": "en-GB"});
     await flutterTts.awaitSpeakCompletion(false);
     await flutterTts.speak(
         "Face recognition Screen. Tap anywhere to start recognizing or swipe right for currency recognition.");
-    //await flutterTts.speak("Swipe left for face recognition");
   }
 
   @override
@@ -327,7 +339,18 @@ class _FaceRcgState extends State<FaceRcg> {
       backgroundColor: Colors.white,
       body: GestureDetector(
         onTap: () => Navigator.of(context)
-            .push(MaterialPageRoute(builder: (_) => const FaceRecognition())),
+            .push(
+          MaterialPageRoute(
+            builder: (_) => const FaceRecognition(),
+          ),
+        )
+            .then(
+          (_) async {
+            await flutterTts.awaitSpeakCompletion(false);
+            await flutterTts.speak(
+                "Face recognition Screen. Tap anywhere to start recognizing or swipe right for currency recognition.");
+          },
+        ),
         child: SingleChildScrollView(
           child: Column(
             children: [

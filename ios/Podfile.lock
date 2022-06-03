@@ -78,6 +78,8 @@ PODS:
     - Flutter
   - tflite_flutter_helper (0.0.1):
     - Flutter
+  - volume_controller (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - camera (from `.symlinks/plugins/camera/ios`)
@@ -90,6 +92,7 @@ DEPENDENCIES:
   - telephony (from `.symlinks/plugins/telephony/ios`)
   - tflite_flutter (from `.symlinks/plugins/tflite_flutter/ios`)
   - tflite_flutter_helper (from `.symlinks/plugins/tflite_flutter_helper/ios`)
+  - volume_controller (from `.symlinks/plugins/volume_controller/ios`)
 
 SPEC REPOS:
   trunk:
@@ -128,6 +131,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/tflite_flutter/ios"
   tflite_flutter_helper:
     :path: ".symlinks/plugins/tflite_flutter_helper/ios"
+  volume_controller:
+    :path: ".symlinks/plugins/volume_controller/ios"
 
 SPEC CHECKSUMS:
   camera: 9993f92f2c793e87b65e35f3a23c70582afb05b1
@@ -153,6 +158,7 @@ SPEC CHECKSUMS:
   telephony: c41768fae9fb5495781b05a72004106ca33ec777
   tflite_flutter: 9157a660578930a99728974f247369af1c3595d5
   tflite_flutter_helper: 543b46b6bd064b21c92ea6e54bc0b29f1ce74cb5
+  volume_controller: 531ddf792994285c9b17f9d8a7e4dcdd29b3eae9
 
 PODFILE CHECKSUM: a564335c9ed3abfb9870146a33d66f8c27c3095e
 

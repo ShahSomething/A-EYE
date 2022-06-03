@@ -50,6 +50,7 @@ dependencies:
   telephony: ^0.1.4
   camera: ^0.9.4+5
   tflite_flutter: ^0.9.0
+  volume_controller: ^2.0.3
   #firebase_ml_vision: ^0.6.0
 
 dev_dependencies:

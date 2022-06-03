@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:a_eye/ui/tab_view.dart';
+import 'package:volume_controller/volume_controller.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -29,6 +30,13 @@ class SplashScreenState extends State<SplashScreen>
   @override
   initState() {
     super.initState();
+    VolumeController().getVolume().then(
+      (currentVol) {
+        if (currentVol < 0.5) {
+          VolumeController().setVolume(0.5);
+        }
+      },
+    );
 
     animationController =
         AnimationController(vsync: this, duration: const Duration(seconds: 3));

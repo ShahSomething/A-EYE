@@ -443,6 +443,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.2"
+  volume_controller:
+    dependency: "direct main"
+    description:
+      name: volume_controller
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.3"
   win32:
     dependency: transitive
     description:

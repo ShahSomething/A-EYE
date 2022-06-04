@@ -40,18 +40,16 @@ dependencies:
       ref: a7d7a59a33f7cffa0a2a12ab05625807622cc97a
   image: ^3.1.0
   path_provider: ^2.0.8
-  #image_picker: ^0.8.4+4
   lottie: ^1.2.2
   font_awesome_flutter: ^10.0.0
   flutter_tts: ^3.3.3
-  #google_ml_kit: ^0.7.3
   google_mlkit_face_detection: ^0.3.0
   shake: ^2.1.0
   telephony: ^0.1.4
   camera: ^0.9.4+5
   tflite_flutter: ^0.9.0
   volume_controller: ^2.0.3
-  #firebase_ml_vision: ^0.6.0
+  geolocator: ^8.2.1
 
 dev_dependencies:
   flutter_test:

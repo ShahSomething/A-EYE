@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:lottie/lottie.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:a_eye/ui/CurrencyRcg/currency_recognition.dart';
@@ -81,9 +82,57 @@ class _TabViewScreenState extends State<TabViewScreen>
         final Telephony telephony = Telephony.instance;
         bool? permissionsGranted = await telephony.requestSmsPermissions;
         if (permissionsGranted == true) {
+          LocationPermission permission;
+          bool serviceEnabled;
+
+          try {
+            serviceEnabled = await Geolocator.isLocationServiceEnabled();
+            if (!serviceEnabled) {
+              if (!serviceEnabled) {
+                return;
+              }
+            }
+            permission = await Geolocator.checkPermission();
+            if (permission == LocationPermission.denied) {
+              Geolocator.requestPermission()
+                  .then((value) => permission = value);
+              if (permission == LocationPermission.denied) {
+                await flutterTts.speak('Location permissions are denied');
+                telephony.sendSms(
+                  to: phoneNumber1!.text + ';' + phoneNumber2!.text,
+                  message: "I needs your help",
+                  statusListener: (status) async {
+                    switch (status) {
+                      case SendStatus.SENT:
+                        await flutterTts.speak('Message sent successfully');
+                        break;
+                      case SendStatus.DELIVERED:
+                        await flutterTts
+                            .speak('Message delivered successfully');
+                        break;
+                      default:
+                        await flutterTts.speak('Failed to send message');
+                    }
+                  },
+                );
+                return;
+              }
+            }
+          } catch (e) {
+            //print(e.toString());
+          }
+
+          Position position = await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.best);
+          String lat = (position.latitude).toString();
+          String long = (position.longitude).toString();
+          String alt = (position.altitude).toString();
+          String speed = (position.speed).toString();
+          String timestamp = (position.timestamp).toString();
           telephony.sendSms(
             to: phoneNumber1!.text + ';' + phoneNumber2!.text,
-            message: "Need your help!",
+            message:
+                "I needs your help, last seen at: Latitude: $lat, Longitude: $long, Altitude: $alt, Speed: $speed, Time: $timestamp",
             statusListener: (status) async {
               switch (status) {
                 case SendStatus.SENT:
